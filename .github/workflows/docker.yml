@@ -21,28 +21,28 @@ jobs:
     - name: Build Docker image
       run: docker build . -t image
 
-  gpr:
-    name: Push to GitHub Package Registry
-    if: github.event_name == 'push'
+  awsecr:
+    name: Push to ECR
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v1
-    - uses: antequant/docker-push-action@v0.3
+    - uses: jwalton/gh-ecr-push@v1
       with:
-        docker_server: docker.pkg.github.com
-        docker_password: ${{ secrets.GITHUB_TOKEN }}
-        image_path: docker.pkg.github.com/${{ github.repository }}
+        access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        region: eu-west-1
+        image: ib-gateway:v1
+
+#   gpr:
+#     name: Push to GitHub Package Registry
+#     if: github.event_name == 'push'
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - uses: actions/checkout@v1
+#     - uses: antequant/docker-push-action@v0.3
+#       with:
+#         docker_server: docker.pkg.github.com
+#         docker_password: ${{ secrets.GITHUB_TOKEN }}
+#         image_path: docker.pkg.github.com/${{ github.repository }}
   
-  dockerhub:
-    name: Push to Docker Hub
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v1
-    - uses: antequant/docker-push-action@v0.3
-      with:
-        docker_username: antequantsvcuser
-        docker_password: ${{ secrets.DOCKER_TOKEN }}
-        image_path: antequantmirror
+ 
